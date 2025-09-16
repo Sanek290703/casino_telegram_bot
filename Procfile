@@ -1,1 +1,1 @@
-worker: python сazino_bot
+worker: python kazino_bot.py
