@@ -44,7 +44,7 @@ def rps_keyboard():
 @bot.message_handler(commands=['start'])
 def start(message):
     user_id = message.from_user.id
-    user_data[user_id] = {"balance": 0, "state": "main", "bet": 10}  # ставку по умолчанию 10
+    user_data[user_id] = {"balance": 0, "state": "main", "bet": 10}  # ставка по умолчанию
     bot.send_message(message.chat.id,
                      "Привет, друг! 👋\nЯ твой игровой бот.\nВыбери действие:",
                      reply_markup=main_keyboard())
@@ -72,8 +72,7 @@ def handle_message(message):
     elif text == "🏢 Идти работать":
         bot.send_message(message.chat.id, "Ты пошел работать... ⏳")
         user_data[user_id]["state"] = "working"
-        # имитация работы
-        time.sleep(3)
+        time.sleep(3)  # имитация работы
         user_data[user_id]["balance"] += 20
         user_data[user_id]["state"] = "main"
         bot.send_message(message.chat.id, f"💼 Отличная работа! Ты заработал 20$\n💰 Баланс: {user_data[user_id]['balance']}$",
@@ -156,7 +155,6 @@ def coin_game(message):
         user_data[user_id]["balance"] -= bet
         bot.send_message(message.chat.id, f"🪙 Выпало: {result.capitalize()}!\n😢 Вы проиграли {bet}$\n💰 Баланс: {user_data[user_id]['balance']}$")
 
-    # Спросим снова выбор игры (ставка остаётся прежней)
     bot.send_message(message.chat.id, f"💰 Текущая ставка: {user_data[user_id]['bet']}$\nВыбирай: Орел или Решка", reply_markup=coin_keyboard())
     bot.register_next_step_handler(message, coin_game)
 
@@ -194,8 +192,15 @@ def rps_game(message):
         user_data[user_id]["balance"] -= bet
         bot.send_message(message.chat.id, f"😢 Бот выбрал {bot_choice.capitalize()}.\nВы проиграли {bet}$\n💰 Баланс: {user_data[user_id]['balance']}$")
 
-    # Спросим снова выбор игры (ставка остаётся прежней)
     bot.send_message(message.chat.id, f"💰 Текущая ставка: {user_data[user_id]['bet']}$\nВыбирай: Камень, Ножницы или Бумага", reply_markup=rps_keyboard())
     bot.register_next_step_handler(message, rps_game)
 
-bot.infinity_polling()
+# --- Запуск бота с авто-перезапуском ---
+if __name__ == "__main__":
+    while True:
+        try:
+            print("🚀 Бот запущен!")
+            bot.infinity_polling(timeout=60, long_polling_timeout=60)
+        except Exception as e:
+            print(f"⚠️ Ошибка: {e}. Перезапуск через 5 секунд...")
+            time.sleep(5)
